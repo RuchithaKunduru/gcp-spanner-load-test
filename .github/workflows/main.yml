@@ -1,4 +1,4 @@
-name: JMeter Test Run
+name: JMeter Test Report Deployment
 
 on:
   push:
@@ -7,11 +7,11 @@ on:
   workflow_dispatch:
 
 jobs:
-  run-jmeter:
+  jmeter-run:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repository
+      - name: Checkout code
         uses: actions/checkout@v3
 
       - name: Install JMeter
@@ -22,13 +22,15 @@ jobs:
           unzip apache-jmeter-5.6.3.zip
           mv apache-jmeter-5.6.3 jmeter
 
-      - name: Run JMeter test
+      - name: Run JMeter Test and Generate HTML Report
         run: |
           mkdir results
           ./jmeter/bin/jmeter -n -t AMAZON_PERFORMANCE.jmx -l results/result.jtl -e -o results/html-report
 
-      - name: Upload HTML Report Artifact
-        uses: actions/upload-artifact@v4
+      - name: Deploy HTML Report to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v4
         with:
-          name: jmeter-html-report
-          path: results/html-report
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./results/html-report
+          publish_branch: gh-pages
+          force_orphan: true
