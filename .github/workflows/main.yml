@@ -25,7 +25,7 @@ jobs:
       - name: Run JMeter test
         run: |
           mkdir results
-          ./jmeter/bin/jmeter -n -t amazon-performance.jmx -l results/result.jtl -e -o results/html-report
+          ./jmeter/bin/jmeter -n -t AMAZON_PERFORMANCE.jmx -l results/result.jtl -e -o results/html-report
 
       - name: Upload HTML Report Artifact
         uses: actions/upload-artifact@v4
