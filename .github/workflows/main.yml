@@ -28,7 +28,7 @@ jobs:
       - name: Run JMeter and Generate HTML Report
         run: |
           mkdir -p results/html-report-${{ steps.date.outputs.date }}
-          ./jmeter/bin/jmeter -n -t amazon-performance.jmx \
+          ./jmeter/bin/jmeter -n -t AMAZON_PERFORMANCE.jmx \
             -l results/result-${{ steps.date.outputs.date }}.jtl \
             -e -o results/html-report-${{ steps.date.outputs.date }}
 
