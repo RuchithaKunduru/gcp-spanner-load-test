@@ -18,6 +18,7 @@ It executes a test plan (amazon-performance.jmx), generates an HTML performance 
 ├── README.md                          # You're here!
 
 
+
 **🚀 Features**
 
 ✅ Automated JMeter load testing via GitHub Actions
@@ -31,6 +32,7 @@ It executes a test plan (amazon-performance.jmx), generates an HTML performance 
 ✅ Auto-generated summary.md with total requests and average response time
 
 ✅ Supports multiple .jmx files in test-plans/
+
 
 **📈 Test Plan: amazon-performance.jmx**
 
@@ -47,6 +49,7 @@ This JMeter test plan includes:
 
 It simulates real-world traffic to validate response times and system stability under load.
 
+
 **🛠️ How to Run (Manually)**
 
 You can trigger the GitHub Actions workflow manually:
@@ -58,6 +61,7 @@ You can trigger the GitHub Actions workflow manually:
     Select "Run All JMeter Test Plans"
     
     Click "Run workflow"
+    
 
   **🌍 Accessing Reports**
 
@@ -70,8 +74,8 @@ After a successful run, reports are published to GitHub Pages.
 
 Contains:
 
-    index.html (interactive charts and graphs)
+index.html (interactive charts and graphs)
     
-    summary.md (markdown report)
+summary.md (markdown report)
 
 
