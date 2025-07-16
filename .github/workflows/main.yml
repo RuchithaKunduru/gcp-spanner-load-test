@@ -32,16 +32,28 @@ jobs:
             -l results/result-${{ steps.date.outputs.date }}.jtl \
             -e -o results/html-report-${{ steps.date.outputs.date }}
 
-      - name: Create Test Summary Markdown
+      - name: Create Test Summary Markdown (CSV-safe)
         run: |
+          set -e
           summary_file=results/html-report-${{ steps.date.outputs.date }}/summary.md
+          jtl_file=results/result-${{ steps.date.outputs.date }}.jtl
+      
+          if [[ ! -f "$jtl_file" ]]; then
+            echo "❌ JTL file not found: $jtl_file"
+            exit 1
+          fi
+      
           echo "## JMeter Test Summary - ${{ steps.date.outputs.date }}" > $summary_file
           echo "" >> $summary_file
-          total=$(grep -c '<httpSample' results/result-${{ steps.date.outputs.date }}.jtl)
+      
+          total=$(tail -n +2 "$jtl_file" | wc -l)
           echo "**Total Requests:** $total" >> $summary_file
-          avg=$(awk -F',' '{sum+=$2} END {if (NR>0) print int(sum/NR)}' results/result-${{ steps.date.outputs.date }}.jtl)
+      
+          avg=$(tail -n +2 "$jtl_file" | awk -F',' '{sum+=$2} END {if (NR>0) print int(sum/NR)}')
           echo "**Average Response Time:** ${avg:-0} ms" >> $summary_file
-          echo "**JTL File:** result-${{ steps.date.outputs.date }}.jtl" >> $summary_file
+      
+          echo "**JTL File:** $(basename $jtl_file)" >> $summary_file
+
 
       - name: Deploy to GitHub Pages (under reports/yyyy-mm-dd/)
         uses: peaceiris/actions-gh-pages@v4
