@@ -1,13 +1,12 @@
-name: JMeter Test Report Deployment
+name: Weekly JMeter Performance Test
 
 on:
-  push:
-    branches:
-      - main
   workflow_dispatch:
+  schedule:
+    - cron: '30 0 * * 1'  # Every Monday at 6:00 AM IST
 
 jobs:
-  jmeter-run:
+  jmeter-test:
     runs-on: ubuntu-latest
 
     steps:
@@ -22,15 +21,33 @@ jobs:
           unzip apache-jmeter-5.6.3.zip
           mv apache-jmeter-5.6.3 jmeter
 
-      - name: Run JMeter Test and Generate HTML Report
-        run: |
-          mkdir results
-          ./jmeter/bin/jmeter -n -t AMAZON_PERFORMANCE.jmx -l results/result.jtl -e -o results/html-report
+      - name: Generate Timestamp
+        id: date
+        run: echo "date=$(date +'%Y-%m-%d')" >> $GITHUB_OUTPUT
 
-      - name: Deploy HTML Report to GitHub Pages
+      - name: Run JMeter and Generate HTML Report
+        run: |
+          mkdir -p results/html-report-${{ steps.date.outputs.date }}
+          ./jmeter/bin/jmeter -n -t amazon-performance.jmx \
+            -l results/result-${{ steps.date.outputs.date }}.jtl \
+            -e -o results/html-report-${{ steps.date.outputs.date }}
+
+      - name: Create Test Summary Markdown
+        run: |
+          summary_file=results/html-report-${{ steps.date.outputs.date }}/summary.md
+          echo "## JMeter Test Summary - ${{ steps.date.outputs.date }}" > $summary_file
+          echo "" >> $summary_file
+          total=$(grep -c '<httpSample' results/result-${{ steps.date.outputs.date }}.jtl)
+          echo "**Total Requests:** $total" >> $summary_file
+          avg=$(awk -F',' '{sum+=$2} END {if (NR>0) print int(sum/NR)}' results/result-${{ steps.date.outputs.date }}.jtl)
+          echo "**Average Response Time:** ${avg:-0} ms" >> $summary_file
+          echo "**JTL File:** result-${{ steps.date.outputs.date }}.jtl" >> $summary_file
+
+      - name: Deploy to GitHub Pages (under reports/yyyy-mm-dd/)
         uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./results/html-report
+          publish_dir: results/html-report-${{ steps.date.outputs.date }}
+          destination_dir: reports/${{ steps.date.outputs.date }}
           publish_branch: gh-pages
-          force_orphan: true
+          force_orphan: false
