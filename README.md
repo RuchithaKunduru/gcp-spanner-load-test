@@ -1,5 +1,6 @@
 # Jmeter-load-test
-**🧪 JMeter Load Testing: Amazon Performance**
+**🧪 JMeter Load Testing:**
+**Amazon Performance**
 This project automates performance/load testing for Amazon-like workflows using Apache JMeter and GitHub Actions.
 It executes a test plan (amazon-performance.jmx), generates an HTML performance report, and publishes it to GitHub Pages under date-based folders.
 
